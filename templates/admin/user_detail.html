@@ -1,0 +1,36 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Пользователь #{{ user.id }}{% endblock %}
+{% block admin_content %}
+<h1>Пользователь #{{ user.id }}</h1>
+<div class="user-detail">
+    <p><strong>Имя:</strong> {{ user.name }}</p>
+    <p><strong>Телефон:</strong> {{ user.phone }}</p>
+    <p><strong>Email:</strong> {{ user.email }}</p>
+    <p><strong>Согласие на рассылку:</strong> {{ 'Да' if user.consent_mailing else 'Нет' }}</p>
+    <p><strong>Зарегистрирован:</strong> {{ user.created_at[:16] if user.created_at else '-' }}</p>
+</div>
+<h2>Записи</h2>
+<div class="admin-table-wrapper">
+    <table class="admin-table">
+        <thead>
+            <tr><th>ID</th><th>Услуга</th><th>Начало</th><th>Конец</th><th>Адрес</th><th>Статус</th><th>Оценка</th></tr>
+        </thead>
+        <tbody>
+            {% for b in bookings %}
+            <tr>
+                <td>{{ b.id }}</td>
+                <td>{{ b.service_name }}</td>
+                <td>{{ b.start_time[:16] }}</td>
+                <td>{{ b.end_time[:16] }}</td>
+                <td>{{ addresses.get(b.address, {}).get('name', b.address) }}</td>
+                <td>{{ b.status }}</td>
+                <td>{{ b.rating if b.rating else '-' }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="7">Нет записей</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<a href="/admin/users" class="btn btn-secondary">← Назад</a>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Профиль — АМГ{% endblock %}
+{% block content %}
+<header class="header">
+    <div class="header-content">
+        <div class="logo"><a href="/" class="logo-link">АМГ</a></div>
+        <nav class="nav">
+            <a href="/">На главную</a>
+            <a href="/logout">Выйти</a>
+        </nav>
+    </div>
+</header>
+
+<main class="main-offset">
+    <div class="container">
+        {% if not session.user_phone %}
+        <div class="profile-login">
+            <h1 class="section-title">Личный кабинет</h1>
+            <p class="profile-desc">Введите номер телефона, чтобы просмотреть свои записи</p>
+            <form method="post" class="profile-form">
+                <div class="form-group">
+                    <input type="tel" name="phone" class="form-input" placeholder="+7 (___) ___-__-__" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Войти</button>
+            </form>
+        </div>
+        {% else %}
+        <div class="profile-header">
+            <h1 class="section-title">Мои записи</h1>
+            <a href="/" class="btn-profile-add">+</a>
+        </div>
+        {% if user %}
+        <div class="profile-info">
+            <p>{{ user.name }}</p>
+            <p>{{ user.phone }}</p>
+            <p>{{ user.email }}</p>
+        </div>
+        {% endif %}
+        {% if bookings %}
+        <div class="bookings-list">
+            {% for b in bookings %}
+            <div class="booking-card" data-id="{{ b.id }}">
+                <div class="booking-service">{{ b.service_name }}</div>
+                <div class="booking-time">{{ b.start_time[:16] }} — {{ b.end_time[:16] }}</div>
+                <div class="booking-address">{{ addresses.get(b.address, {}).get('name', b.address) }} — {{ addresses.get(b.address, {}).get('address', '') }}</div>
+                <div class="booking-status">{{ 'Активна' if b.status == 'active' else 'Завершена' }}</div>
+                {% if b.status == 'active' and b.end_time < now %}
+                <div class="booking-rate">
+                    <span>Оцените визит:</span>
+                    <div class="stars" data-booking="{{ b.id }}">
+                        {% for i in range(1, 6) %}
+                        <span class="star" data-value="{{ i }}" onclick="rateBooking({{ b.id }}, {{ i }})">{{ '★' if b.rating and b.rating >= i else '☆' }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% elif b.rating %}
+                <div class="booking-rate">Оценка: {{ '★' * b.rating }}{{ '☆' * (5 - b.rating) }}</div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="profile-empty">У вас пока нет записей.</p>
+        {% endif %}
+        {% endif %}
+    </div>
+</main>
+{% endblock %}

@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% block title %}АМГ — Барбершоп{% endblock %}
+{% block content %}
+<header class="header">
+    <div class="header-content">
+        <div class="logo">АМГ</div>
+        <nav class="nav">
+            <button class="nav-close" id="navClose" aria-label="Закрыть меню">✕</button>
+            <a href="#services">Услуги</a>
+            <a href="#contacts">Контакты</a>
+            <a href="/profile" class="nav-profile">Профиль</a>
+        </nav>
+        <button class="nav-toggle" id="navToggle" aria-label="Меню">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+</header>
+
+<main>
+    <section class="hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1 class="hero-title">КОРОТКО</h1>
+            <p class="hero-subtitle">Барбершоп с характером</p>
+            <p class="hero-desc">Строгий стиль. Острые линии. Твой образ.</p>
+            <button class="btn btn-primary" onclick="openModal('bookingModal')">Записаться</button>
+        </div>
+        <div class="scroll-hint">↓</div>
+    </section>
+
+    <section class="section" id="services">
+        <div class="container">
+            <h2 class="section-title">Услуги и цены</h2>
+            <div class="services-list" id="servicesList"></div>
+        </div>
+    </section>
+
+    <section class="section section-dark" id="contacts">
+        <div class="container">
+            <h2 class="section-title">Контакты</h2>
+            <div class="contacts-grid">
+                <div class="contact-card">
+                    <div class="contact-label">Телефон</div>
+                    <a href="tel:+79963375570" class="contact-value contact-phone">+7 996 337 55 70</a>
+                </div>
+                <div class="contact-card">
+                    <div class="contact-label">WhatsApp</div>
+                    <a href="https://wa.me/79963375570" target="_blank" class="contact-value">Написать в WhatsApp</a>
+                </div>
+                <div class="contact-card">
+                    <div class="contact-label">Telegram</div>
+                    <a href="https://t.me/barb_korotko" target="_blank" class="contact-value">@barb_korotko</a>
+                </div>
+                <div class="contact-card">
+                    <div class="contact-label">Адрес 1 (АМГ)</div>
+                    <div class="contact-value">ул. Юлиуса Фучика 88А</div>
+                    <div style="font-size: 13px; color: #888; margin-top: 6px;">Часы работы: 10:00 – 21:00</div>
+                    <a href="https://yandex.ru/maps/43/kazan/?indoorLevel=1&ll=49.232150%2C55.762840&mode=routes&rtext=~55.762693%2C49.232238&rtt=auto&ruri=~ymapsbm1%3A%2F%2Forg%3Foid%3D144244211265&z=17.11" target="_blank" class="contact-route">Построить маршрут →</a>
+                </div>
+                <div class="contact-card">
+                    <div class="contact-label">Адрес 2 (КОРОТКО)</div>
+                    <div class="contact-value">ул. Фатыха Амирхана 21б/1</div>
+                    <div style="font-size: 13px; color: #888; margin-top: 6px;">Часы работы: 10:00 – 21:00</div>
+                    <a href="https://yandex.ru/maps/43/kazan/?mode=routes&rtext=~55.807524%2C49.169399&rtt=auto" target="_blank" class="contact-route">Построить маршрут →</a>
+                </div>
+                <div class="contact-card">
+                    <div class="contact-label">Часы работы</div>
+                    <div class="contact-value">АМГ: 10:00 – 21:00<br>КОРОТКО: 10:00 – 21:00</div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<div class="modal" id="bookingModal">
+    <div class="modal-backdrop" onclick="closeModal('bookingModal')"></div>
+    <div class="modal-content">
+        <button class="modal-close" onclick="closeModal('bookingModal')">✕</button>
+        <h2 class="modal-title">Запись на стрижку</h2>
+        <form id="bookingForm" novalidate>
+            <div class="form-group">
+                <label class="form-label required">Выберите адрес</label>
+                <div class="address-selector" id="addressSelector">
+                    <label class="address-option active" data-value="amg">
+                        <input type="radio" name="address" value="amg" checked hidden>
+                        <span class="address-name">АМГ</span>
+                        <span class="address-detail">ул. Юлиуса Фучика 88А</span>
+                    </label>
+                    <label class="address-option" data-value="korotko">
+                        <input type="radio" name="address" value="korotko" hidden>
+                        <span class="address-name">КОРОТКО</span>
+                        <span class="address-detail">ул. Фатыха Амирхана 21б/1</span>
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label required">Услуга</label>
+                <select name="service_id" id="serviceSelect" class="form-input" required>
+                    <option value="">— Выберите услугу —</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label required">Дата</label>
+                <input type="date" name="date" id="dateInput" class="form-input" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label required">Время</label>
+                <select name="time" id="timeSelect" class="form-input" required>
+                    <option value="">— Сначала выберите услугу и дату —</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label required">Ваше имя</label>
+                <input type="text" name="name" class="form-input" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label required">Телефон</label>
+                <input type="tel" name="phone" class="form-input" id="phoneInput" placeholder="+7 (___) ___-__-__" required>
+                <span class="form-error" id="phoneError"></span>
+            </div>
+            <div class="form-group">
+                <label class="form-label required">Email</label>
+                <input type="email" name="email" class="form-input" id="emailInput" required>
+                <span class="form-error" id="emailError"></span>
+            </div>
+            <div class="form-group">
+                <label class="form-checkbox">
+                    <input type="checkbox" name="consent_policy" id="consentPolicy" required>
+                    <span>Я согласен с <a href="/static/privacy.html" target="_blank">политикой конфиденциальности</a></span>
+                </label>
+            </div>
+            <div class="form-group">
+                <label class="form-checkbox">
+                    <input type="checkbox" name="consent_mailing">
+                    <span>Согласен на получение рассылки <span class="optional-badge">(необязательно)</span></span>
+                </label>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block" id="bookSubmitBtn" disabled>Записаться</button>
+            <div class="form-message" id="formMessage"></div>
+        </form>
+    </div>
+</div>
+
+<div class="fab-container">
+    <a href="tel:+79963375570" class="fab fab-phone" aria-label="Позвонить">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M6.62,10.79C8.06,13.62 10.38,15.94 13.21,17.38L15.41,15.18C15.69,14.9 16.08,14.82 16.43,14.93C17.55,15.3 18.75,15.5 20,15.5A1,1 0 0,1 21,16.5V20A1,1 0 0,1 20,21A17,17 0 0,1 3,4A1,1 0 0,1 4,3H7.5A1,1 0 0,1 8.5,4C8.5,5.25 8.7,6.45 9.07,7.57C9.18,7.92 9.1,8.31 8.82,8.59L6.62,10.79Z"/></svg>
+    </a>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <p>© 2026 Барбершоп КОРОТКО</p>
+    </div>
+</footer>
+{% endblock %}

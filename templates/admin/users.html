@@ -1,0 +1,39 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Пользователи{% endblock %}
+{% block admin_content %}
+<h1>Пользователи</h1>
+<form method="get" class="admin-search">
+    <input type="text" name="search" class="form-input" placeholder="Поиск по имени, телефону или email" value="{{ search }}">
+    <button type="submit" class="btn btn-primary">Поиск</button>
+    {% if search %}
+    <a href="/admin/users" class="btn btn-secondary">Сбросить</a>
+    {% endif %}
+</form>
+<div class="admin-table-wrapper">
+    <table class="admin-table">
+        <thead>
+            <tr><th>ID</th><th>Имя</th><th>Телефон</th><th>Email</th><th>Рассылка</th><th>Записи</th><th>Действия</th></tr>
+        </thead>
+        <tbody>
+            {% for u in users %}
+            <tr>
+                <td>{{ u.id }}</td>
+                <td>{{ u.name }}</td>
+                <td>{{ u.phone }}</td>
+                <td>{{ u.email }}</td>
+                <td>{{ 'Да' if u.consent_mailing else 'Нет' }}</td>
+                <td>{{ u.booking_count }}</td>
+                <td class="actions">
+                    <a href="/admin/user/{{ u.id }}" class="btn-small">Детали</a>
+                    <form method="post" action="/admin/user/{{ u.id }}/delete" onsubmit="return confirm('Удалить пользователя?')" style="display:inline">
+                        <button type="submit" class="btn-small btn-danger">Удалить</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="7">Нет пользователей</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

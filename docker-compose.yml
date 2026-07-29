@@ -1,0 +1,14 @@
+services:
+  barbershop:
+    build: .
+    container_name: amg-barbershop
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=/app/data/korotko.db
+    volumes:
+      - korotko_data:/app/data
+    restart: unless-stopped
+
+volumes:
+  korotko_data:

@@ -1,0 +1,64 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Рассылка{% endblock %}
+{% block admin_content %}
+<h1>Рассылка</h1>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for cat, msg in messages %}
+<div class="flash flash-{{ cat }}">{{ msg }}</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+<h2>Настройки Яндекс.Почты</h2>
+<p class="admin-note">Для отправки реальных писем через Яндекс.Почту</p>
+<form method="post" class="admin-form">
+    <input type="hidden" name="action" value="save_settings">
+    <div class="form-group">
+        <input type="email" name="yandex_email" class="form-input" placeholder="Яндекс.Почта (example@yandex.ru)" value="{{ yandex_email }}">
+    </div>
+    <div class="form-group">
+        <input type="password" name="yandex_password" class="form-input" placeholder="Пароль приложения" value="">
+        {% if yandex_password %}<small style="color:#666;">Пароль сохранён (оставьте пустым, чтобы не менять)</small>{% endif %}
+    </div>
+    <button type="submit" class="btn btn-primary">Сохранить настройки</button>
+</form>
+
+<div class="settings-guide">
+    <h3>Как настроить Яндекс.Почту для рассылки</h3>
+    <ol>
+        <li>Зайдите в свой <strong>Яндекс.Почту</strong> &rarr; <strong>«Все настройки»</strong> &rarr; <strong>«Почтовые программы»</strong></li>
+        <li>Включите <strong>«С сервера imap.yandex.ru по протоколу IMAP»</strong> и <strong>«С сервера pop3.yandex.ru по протоколу POP3»</strong></li>
+        <li>В разделе <strong>«Пароли и авторизация»</strong> &rarr; <strong>«Пароли приложений»</strong> создайте новый пароль:
+            <ul style="margin-top:4px;padding-left:20px;color:#888;list-style:disc;">
+                <li>Тип: <strong>«Почтовый клиент»</strong> или <strong>«Другое»</strong></li>
+                <li>Скопируйте сгенерированный пароль (он будет длиной ~16 символов)</li>
+            </ul>
+        </li>
+        <li>Вставьте <strong>логин</strong> (полный email) и <strong>пароль приложения</strong> в поля выше и нажмите «Сохранить настройки»</li>
+        <li>Отправьте тестовое письмо на свой email, чтобы проверить</li>
+    </ol>
+    <p style="margin-top:12px;color:#666;">⚠️ Используйте <strong>пароль приложения</strong>, а не пароль от аккаунта. Обычный пароль не подойдёт.</p>
+</div>
+
+<h2>Тестовое письмо</h2>
+<form method="post" class="admin-form" style="margin-bottom:32px;">
+    <input type="hidden" name="action" value="test">
+    <div class="form-group" style="display:flex;gap:12px;">
+        <input type="email" name="test_email" class="form-input" placeholder="email для теста" required style="flex:1;">
+        <button type="submit" class="btn btn-secondary">Отправить тест</button>
+    </div>
+</form>
+
+<h2>Создать рассылку</h2>
+<form method="post" class="admin-form">
+    <div class="form-group">
+        <input type="text" name="subject" class="form-input" placeholder="Тема письма" required>
+    </div>
+    <div class="form-group">
+        <textarea name="body" class="form-input" rows="10" placeholder="Текст письма" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Отправить рассылку</button>
+</form>
+{% endblock %}

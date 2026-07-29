@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Админка{% endblock %} — АМГ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Roboto+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <div class="admin-logo">АМГ</div>
+            <nav class="admin-nav">
+                <a href="/admin/dashboard">Дашборд</a>
+                <a href="/admin/users">Пользователи</a>
+                <a href="/admin/mailing">Рассылка</a>
+                <a href="/admin/logout">Выйти</a>
+            </nav>
+        </aside>
+        <main class="admin-main">
+            {% block admin_content %}{% endblock %}
+        </main>
+    </div>
+</body>
+</html>
