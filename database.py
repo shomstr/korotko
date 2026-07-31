@@ -137,12 +137,13 @@ def set_setting(key, value):
     conn.commit()
     conn.close()
 
-def check_booking_conflict(cursor, new_start, new_end):
+def check_booking_conflict(cursor, new_start, new_end, address='amg'):
     cursor.execute(
         """SELECT id FROM bookings
            WHERE status = 'active'
+           AND address = ?
            AND (? < datetime(end_time, '+15 minutes'))
            AND (datetime(?, '+15 minutes') > start_time)""",
-        (new_start, new_end)
+        (address, new_start, new_end)
     )
     return cursor.fetchone() is not None

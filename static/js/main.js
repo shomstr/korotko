@@ -98,12 +98,14 @@ document.addEventListener('DOMContentLoaded', () => {
     function loadSlots() {
         const serviceId = serviceSelect.value;
         const date = dateInput.value;
+        const selectedAddress = document.querySelector('.address-option.active');
+        const address = selectedAddress ? selectedAddress.dataset.value : 'amg';
         if (!serviceId || !date) {
             timeSelect.innerHTML = '<option value="">— Сначала выберите услугу и дату —</option>';
             return;
         }
         timeSelect.innerHTML = '<option value="">Загрузка...</option>';
-        fetch(`/api/slots?service_id=${serviceId}&date=${date}`)
+        fetch(`/api/slots?service_id=${serviceId}&date=${date}&address=${address}`)
             .then(r => r.json())
             .then(slots => {
                 if (slots.error) {
@@ -131,6 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.address-option').forEach(o => o.classList.remove('active'));
             el.classList.add('active');
             el.querySelector('input[type="radio"]').checked = true;
+            loadSlots();
         });
     });
 

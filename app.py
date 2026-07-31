@@ -16,8 +16,8 @@ app.permanent_session_lifetime = timedelta(hours=2)
 init_db()
 
 ADDRESSES = {
-    "amg": {"name": "АМГ", "address": "ул. Фатыха Амирхана 21б/1"},
-    "korotko": {"name": "КОРОТКО", "address": "ул. Юлиуса Фучика 88А"},
+    "amg": {"name": "АМГ", "address": "ул. Фатыха Амирхана 21б/1", "work_start": "10:00", "work_end": "21:00"},
+    "korotko": {"name": "КОРОТКО", "address": "ул. Юлиуса Фучика 88А", "work_start": "10:00", "work_end": "20:30"},
 }
 
 @app.context_processor
@@ -35,6 +35,10 @@ def normalize_phone(phone):
 
 WORK_START = 10
 WORK_END = 21
+
+def work_hours(address):
+    addr = ADDRESSES.get(address, ADDRESSES["amg"])
+    return addr["work_start"], addr["work_end"]
 
 def send_email_smtp(recipient, subject, body):
     yandex_user = get_setting("yandex_email")
@@ -76,7 +80,7 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated
 
-def get_available_slots(date_str, service_id):
+def get_available_slots(date_str, service_id, address="amg"):
     conn = get_db()
     cursor = conn.cursor()
     cursor.execute("SELECT duration_min FROM services WHERE id = ?", (service_id,))
@@ -87,8 +91,8 @@ def get_available_slots(date_str, service_id):
     duration = svc['duration_min']
     cursor.execute(
         """SELECT start_time, end_time FROM bookings
-           WHERE status = 'active' AND date(start_time) = ?""",
-        (date_str,)
+           WHERE status = 'active' AND address = ? AND date(start_time) = ?""",
+        (address, date_str)
     )
     existing = cursor.fetchall()
     conn.close()
@@ -99,9 +103,10 @@ def get_available_slots(date_str, service_id):
         et = datetime.strptime(ex['end_time'], "%Y-%m-%d %H:%M:%S")
         existing_parsed.append((st, et))
 
+    work_start, work_end = work_hours(address)
     slots = []
-    cur = datetime.strptime(f"{date_str} {WORK_START}:00", "%Y-%m-%d %H:%M")
-    end_bound = datetime.strptime(f"{date_str} {WORK_END}:00", "%Y-%m-%d %H:%M")
+    cur = datetime.strptime(f"{date_str} {work_start}", "%Y-%m-%d %H:%M")
+    end_bound = datetime.strptime(f"{date_str} {work_end}", "%Y-%m-%d %H:%M")
     while cur + timedelta(minutes=duration) <= end_bound:
         slot_end = cur + timedelta(minutes=duration)
         conflict = False
@@ -134,9 +139,12 @@ def api_services():
 def api_slots():
     service_id = request.args.get("service_id", type=int)
     date_str = request.args.get("date")
+    address = request.args.get("address", "amg")
+    if address not in ADDRESSES:
+        address = "amg"
     if not service_id or not date_str:
         return jsonify({"error": "service_id and date required"}), 400
-    slots = get_available_slots(date_str, service_id)
+    slots = get_available_slots(date_str, service_id, address)
     return jsonify(slots)
 
 @app.route("/api/book", methods=["POST"])
@@ -178,10 +186,18 @@ def api_book():
         conn.close()
         return jsonify({"error": "Неверный формат времени"}), 400
     end_dt = start_dt + timedelta(minutes=duration)
+
+    work_start, work_end = work_hours(address)
+    open_dt = datetime.strptime(f"{date_str} {work_start}", "%Y-%m-%d %H:%M")
+    close_dt = datetime.strptime(f"{date_str} {work_end}", "%Y-%m-%d %H:%M")
+    if start_dt < open_dt or end_dt > close_dt:
+        conn.close()
+        return jsonify({"error": "Время вне графика работы филиала"}), 400
+
     start_str = start_dt.strftime("%Y-%m-%d %H:%M:%S")
     end_str = end_dt.strftime("%Y-%m-%d %H:%M:%S")
 
-    if check_booking_conflict(cursor, start_str, end_str):
+    if check_booking_conflict(cursor, start_str, end_str, address):
         conn.close()
         return jsonify({"error": "Это время уже занято"}), 409
 
