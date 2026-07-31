@@ -16,8 +16,8 @@ app.permanent_session_lifetime = timedelta(hours=2)
 init_db()
 
 ADDRESSES = {
-    "amg": {"name": "АМГ", "address": "ул. Юлиуса Фучика 88А"},
-    "korotko": {"name": "КОРОТКО", "address": "ул. Фатыха Амирхана 21б/1"},
+    "amg": {"name": "АМГ", "address": "ул. Фатыха Амирхана 21б/1"},
+    "korotko": {"name": "КОРОТКО", "address": "ул. Юлиуса Фучика 88А"},
 }
 
 @app.context_processor
